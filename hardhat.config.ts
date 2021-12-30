@@ -1,14 +1,13 @@
 import * as dotenv from "dotenv";
-
-import { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "solidity-coverage";
+import token from "./scripts/token";
 
 dotenv.config();
 
-// You need to export an object to set up your config
-// Go to https://hardhat.org/config/ to learn more
+task("token", "Checks the passed token").addPositionalParam("address", "Address of token").setAction(token);
 
 const config: HardhatUserConfig = {
   solidity: "0.8.10",
@@ -18,6 +17,9 @@ const config: HardhatUserConfig = {
         url: process.env.MAINNET_URL || "",
         blockNumber: 13904050,
       },
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL || "",
     },
   },
 };

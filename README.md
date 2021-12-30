@@ -15,9 +15,17 @@ I also added some basic tests to show how they can be used. Check them out in `t
 
  - `npm run test`
 
+## Usage
+
+ - `npm run token <token address>`
+ - e.g. `npm run token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for USDC
+ - e.g. `npm run token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for some honeypot
+
 ## Inspired by:
 
 - https://github.com/0xV19/TokenProvidence
 - https://github.com/drgorillamd/UniV2-burn
 
-WARNING: Not responsible for any errors which may occur. Use at your own risk.
+
+### WARNING
+Not responsible for any errors which may occur. Use at your own risk.

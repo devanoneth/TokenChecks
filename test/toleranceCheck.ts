@@ -43,7 +43,7 @@ describe("ToleranceCheck", async function () {
     const deployData = ToleranceCheck.getDeployTransaction(
       router.address,
       goodERC20.address,
-      utils.parseEther("0.005"),
+      utils.parseEther("0.01"),
     ).data;
     const returnedData = await ethers.provider.call({
       data: deployData,
@@ -77,7 +77,7 @@ describe("ToleranceCheck", async function () {
     const deployData = ToleranceCheck.getDeployTransaction(
       router.address,
       badERC20.address,
-      utils.parseEther("0.005"),
+      utils.parseEther("0.01"),
     ).data;
 
     // reverts = fail
