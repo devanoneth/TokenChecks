@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "./UniswapV2Library08.sol";
+import "./lib/UniswapV2Library08.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 interface IERC20 {
     function approve(address spender, uint256 amount) external returns (bool);
+
     function balanceOf(address account) external view returns (uint256);
 }
 
@@ -30,23 +31,13 @@ contract ToleranceCheck {
         pathBuy[1] = tokenAddress;
         IERC20 token = IERC20(tokenAddress);
 
-        amounts = UniswapV2Library08.getAmountsOut(
-            router.factory(),
-            msg.value,
-            pathBuy
-        );
+        amounts = UniswapV2Library08.getAmountsOut(router.factory(), msg.value, pathBuy);
         uint256 buyTokenAmount = amounts[amounts.length - 1];
 
         //Buy tokens
         uint256 scrapTokenBalance = token.balanceOf(address(this));
-        router.swapETHForExactTokens{value: msg.value}(
-            buyTokenAmount,
-            pathBuy,
-            address(this),
-            block.timestamp
-        );
-        uint256 tokenAmountOut = token.balanceOf(address(this)) -
-            scrapTokenBalance;
+        router.swapETHForExactTokens{value: msg.value}(buyTokenAmount, pathBuy, address(this), block.timestamp);
+        uint256 tokenAmountOut = token.balanceOf(address(this)) - scrapTokenBalance;
 
         //Sell token
         require(tokenAmountOut > 0, "Can't sell this.");

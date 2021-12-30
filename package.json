@@ -4,13 +4,14 @@
   "description": "Perform various checks against tokens on-chain with 0 gas",
   "main": "hardhat.config.ts",
   "scripts": {
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "lint:check": "npx eslint '**/*.{js,ts}' && npx prettier '**/*.{json,sol,md}' --check && npx solhint 'contracts/**/*.sol'",
+    "lint:fix": "npx eslint '**/*.{js,ts}' --fix && npx prettier --write '**/*.{json,sol,md}' --write && npx solhint 'contracts/**/*.sol' --fix"
   },
   "author": "Devan Non <devanon@chainstride.capital>",
   "license": "MIT",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",
-    "@nomiclabs/hardhat-etherscan": "^2.1.8",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@rari-capital/solmate": "^5.9.0",
     "@typechain/ethers-v5": "^7.2.0",
@@ -18,8 +19,8 @@
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.0.0",
     "@types/node": "^12.20.39",
-    "@typescript-eslint/eslint-plugin": "^4.33.0",
-    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
     "chai": "^4.3.4",
     "dotenv": "^10.0.0",
@@ -33,7 +34,6 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.5.2",
     "hardhat": "^2.8.0",
-    "hardhat-gas-reporter": "^1.0.6",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solhint": "^3.3.6",
