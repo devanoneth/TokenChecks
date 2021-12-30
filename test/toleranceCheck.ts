@@ -21,10 +21,12 @@ describe("ToleranceCheck", async function () {
   });
 
   it("Should work with good erc20", async function () {
+    // Deploy a normal ERC20 token
     const GoodERC20 = await ethers.getContractFactory("GoodERC20");
     const goodERC20 = await GoodERC20.deploy();
     await goodERC20.deployed();
 
+    // List on Uniswap
     await goodERC20.approve(router.address, utils.parseEther("1000"));
     await router.addLiquidityETH(
       goodERC20.address,
@@ -36,6 +38,7 @@ describe("ToleranceCheck", async function () {
       { value: utils.parseEther("5") },
     );
 
+    // Perform the tolerance check test
     const ToleranceCheck = await ethers.getContractFactory("ToleranceCheck");
     const deployData = ToleranceCheck.getDeployTransaction(
       router.address,
@@ -52,10 +55,12 @@ describe("ToleranceCheck", async function () {
   });
 
   it("Should successfully detect bad erc20", async function () {
+    // Deploy a honeypot ERC20 token
     const BadERC20 = await ethers.getContractFactory("BadERC20");
     const badERC20 = await BadERC20.deploy(router.address);
     await badERC20.deployed();
 
+    // List on Uniswap
     await badERC20.approve(router.address, utils.parseEther("1000"));
     await router.addLiquidityETH(
       badERC20.address,
@@ -67,6 +72,7 @@ describe("ToleranceCheck", async function () {
       { value: utils.parseEther("5") },
     );
 
+    // Perform the tolerance check test
     const ToleranceCheck = await ethers.getContractFactory("ToleranceCheck");
     const deployData = ToleranceCheck.getDeployTransaction(
       router.address,

