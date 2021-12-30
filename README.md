@@ -19,7 +19,7 @@ I also added some basic tests to show how they can be used. Check them out in `t
 
  - `npm run token <token address>`
  - e.g. `npm run token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for USDC
- - e.g. `npm run token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for some honeypot
+ - e.g. `npm run token 0x843976d0705c821ae02ab72ab505a496765c8f93` for some honeypot
 
 ## Inspired by:
 
