@@ -2,6 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { IERC20, IUniswapV2Router02 } from "../typechain";
+import { deployedBytecode as UniswapV2FlashCalleeDeployedBytecode } from "../artifacts/contracts/UniswapV2FlashCallee.sol/UniswapV2FlashCallee.json";
 const utils = ethers.utils;
 
 const deadlineBuffer = 180;
@@ -61,38 +62,30 @@ describe("FlashSwap", async function () {
   });
 
   it("Can detect when arb opportunity exists", async function () {
-    const UniswapV2FlashCallee = await ethers.getContractFactory("UniswapV2FlashCallee");
-    const Test = await ethers.getContractFactory("TestContract");
-
     const UniswapV2FlashCaller = await ethers.getContractFactory("UniswapV2FlashCaller");
 
     // We expect a 1 ETH arb opp
-    const daiAmount = (await uniRouter.getAmountsOut(utils.parseEther("1"), [weth.address, dai.address]))[1];
+    // const daiAmount = (await uniRouter.getAmountsOut(utils.parseEther("1"), [weth.address, dai.address]))[1];
     const deployData = UniswapV2FlashCaller.getDeployTransaction(
       uniRouter.address,
       calleAddress,
       dai.address,
       weth.address,
-      daiAmount,
+      utils.parseEther("10"),
       "0",
     ).data;
 
-    await ethers.provider.send("hardhat_setCode", [calleAddress, Test.bytecode]);
-    // console.log(Test.bytecode);
+    // Instead of using geth's state override set, we use hardhats set code method
+    // When running against a network, you should of course use the override set instead
+    await ethers.provider.send("hardhat_setCode", [calleAddress, UniswapV2FlashCalleeDeployedBytecode]);
+    await ethers.provider.send("evm_mine", []);
 
-    // const code = await ethers.provider.getCode(calleAddress);
-    // console.log(code);
-
-    // Here we cannot use ethers.js' `provider.call` method as it does not accept the 3rd param
-    // Would be nice if it did (PR idea)
-    // const data = Test.interface.encodeFunctionData("tryCall");
-    // console.log(data);
     const returnedData = await ethers.provider.call({
       data: deployData,
+      gasLimit: 500000,
     });
 
     console.log(returnedData);
-    // console.log(Test.interface.decodeFunctionResult("tryCall", returnedData));
 
     // 0x01 = arb opportunity exists
     expect(returnedData).to.be.eq("0x01");
