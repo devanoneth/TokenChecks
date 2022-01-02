@@ -6,7 +6,7 @@ This repo is a hardhat-ified and constructor optimized version of [OxV19's](http
 
 I added some basic tests to show how they can be used. Check them out in `test/` to see how to use these contracts efficently.
 
-I also added on an example of [geth's state override set](https://geth.ethereum.org/docs/rpc/ns-eth#3-object---state-override-set) inspiried by [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224). These are the `flashSwap.ts` files in `test` and `scripts`.
+I also added on an example of [geth's state override set](https://geth.ethereum.org/docs/rpc/ns-eth#3-object---state-override-set) inspiried by [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224). These are the `flashSwap.ts` files in `test` and `scripts`. These need to be heavily modified to be useful in a production setting, but they serve as an example for now.
 
 ## Setup
  - `cp .env.example .env`
@@ -25,7 +25,7 @@ I also added on an example of [geth's state override set](https://geth.ethereum.
 
 There is also a [Uniswap Flash Swap](https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps) example between UniswapV2 and Sushiswap on their ETH<>DAI pairs. Running `npm run flash` will test the opportunity without deploying any contracts.
 
-Note, this example is:
+Note, this example is unlikely to find an arb as that's a heavily watched pair. Also, the example is:
  - Not gas optimized.
  - Only works one way and tries to get a profit of 1e-17 DAI.
  - Probably not the most secure.
