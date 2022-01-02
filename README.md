@@ -6,7 +6,7 @@ This repo is a hardhat-ified and constructor optimized version of [OxV19's](http
 
 I added some basic tests to show how they can be used. Check them out in `test/` to see how to use these contracts efficently.
 
-I also added on an example of [geth's state override set](https://geth.ethereum.org/docs/rpc/ns-eth#3-object---state-override-set) inspiried by [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224). These are the `flashSwap.ts` files in `test` and `scripts`. These need to be heavily modified to be useful in a production setting, but they serve as an example for now.
+I also added on an example of [geth's state override set](https://geth.ethereum.org/docs/rpc/ns-eth#3-object---state-override-set) inspired by [libevm's tweet](https://twitter.com/libevm/status/1476791869585588224). These are the `flashSwap.ts` files in `test` and `scripts`. These need to be heavily modified to be useful in a production setting, but they serve as an example for now.
 
 ## Setup
  - `cp .env.example .env`
