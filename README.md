@@ -31,7 +31,7 @@ There is also a [Uniswap Flash Swap](https://docs.uniswap.org/protocol/V2/guides
 Note, this example is unlikely to find an arb as that's a heavily watched pair. Also, the example is:
  - Not gas optimized.
  - Only works one way and tries to get a profit of 1e-18 DAI.
- - Probably not the most secure.
+ - Probably not secure enough for production use.
 
 Think of it as a proof of concept to help you learn about flash swaps and usage of `eth_call`.
 
