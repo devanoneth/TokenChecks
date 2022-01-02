@@ -3,10 +3,12 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { IERC20, IUniswapV2Router02 } from "../typechain";
 import { deployedBytecode as UniswapV2FlashCalleeDeployedBytecode } from "../artifacts/contracts/UniswapV2FlashCallee.sol/UniswapV2FlashCallee.json";
+import { BytesLike } from "ethers";
 const utils = ethers.utils;
 
 const deadlineBuffer = 180;
 const calleAddress = "0x0000000000000000000000000000000000000123";
+const callingAddress = "0x0000000000000000000000000000000000000124";
 
 describe("FlashSwap", async function () {
   let deployer: SignerWithAddress;
@@ -17,6 +19,8 @@ describe("FlashSwap", async function () {
 
   let deadline: number;
 
+  let deployData: BytesLike | undefined;
+
   it("Can setup", async function () {
     [deployer] = await ethers.getSigners();
 
@@ -26,25 +30,40 @@ describe("FlashSwap", async function () {
     dai = await ethers.getContractAt("IERC20", "0x6b175474e89094c44da98b954eedeac495271d0f");
 
     deadline = (await ethers.provider.getBlock("latest")).timestamp + deadlineBuffer;
+
+    // IMPORTANT!
+    // Instead of using geth's state override set, we use hardhat's set code method.
+    // When running against a real network, you should of course use the override set instead.
+    // Look at `scripts/flashSwap.ts` for how to use the state override set against a real network.
+    // We could just deploy it in our hardhat fork, but better to use the set code method
+    // so that we also have to deal with the issues around not having any storate slots set.
+    // Note: you could find/replace any address values that you've put in your contract here
+    // or, you could set the storage slots. It could be worth making a library to help with all of this actually...
+    await ethers.provider.send("hardhat_setCode", [calleAddress, UniswapV2FlashCalleeDeployedBytecode]);
+
+    // This is the initator of the flash swap check
+    const UniswapV2FlashCaller = await ethers.getContractFactory("UniswapV2FlashCaller");
+    // Get deploy data to run the check without actually deploying anything
+    deployData = UniswapV2FlashCaller.getDeployTransaction(
+      uniRouter.address,
+      calleAddress,
+      dai.address,
+      weth.address,
+      utils.parseEther("10"), // we are checking for a tiny opportunity here, 10 DAI
+      "0",
+    ).data;
   });
 
-  // it("Can detect when no arb opportunity exists", async function () {
-  //   const UniswapV2FlashCallee = await ethers.getContractFactory("UniswapV2FlashCallee");
-  //   // This cannot have constructor args as the constructor won't be called
-  //   // But you could sub in any other chains / DEXs addresses into the deploy data
-  //   const calleDeployData = UniswapV2FlashCallee.getDeployTransaction().data;
+  it("Can detect when no arb opportunity exists", async function () {
+    const returnedDataPromise = ethers.provider.call({
+      data: deployData,
+      from: callingAddress,
+      nonce: "0x0", // forcing the nonce so that we get the same address from CREATE for UniswapV2FlashCaller
+    });
 
-  //   const UniswapV2FlashCaller = await ethers.getContractFactory("UniswapV2FlashCaller");
-  //   const callerDeployData = UniswapV2FlashCaller.getDeployTransaction(router.address, feeERC20.address).data;
-
-  //   const returnedData = await ethers.provider.call({
-  //     data: deployData,
-  //     value: utils.parseEther("1"),
-  //   });
-
-  //   // 0x00 = arb opportunity does not exists
-  //   expect(returnedData).to.be.eq("0x00");
-  // });
+    // reverts = fail = no arb opportunity exists
+    await expect(returnedDataPromise).to.be.reverted;
+  });
 
   it("Create arb opportunity", async function () {
     const initialBalance = await dai.balanceOf(deployer.address);
@@ -62,30 +81,11 @@ describe("FlashSwap", async function () {
   });
 
   it("Can detect when arb opportunity exists", async function () {
-    const UniswapV2FlashCaller = await ethers.getContractFactory("UniswapV2FlashCaller");
-
-    // We expect a 1 ETH arb opp
-    // const daiAmount = (await uniRouter.getAmountsOut(utils.parseEther("1"), [weth.address, dai.address]))[1];
-    const deployData = UniswapV2FlashCaller.getDeployTransaction(
-      uniRouter.address,
-      calleAddress,
-      dai.address,
-      weth.address,
-      utils.parseEther("10"),
-      "0",
-    ).data;
-
-    // Instead of using geth's state override set, we use hardhats set code method
-    // When running against a network, you should of course use the override set instead
-    await ethers.provider.send("hardhat_setCode", [calleAddress, UniswapV2FlashCalleeDeployedBytecode]);
-    await ethers.provider.send("evm_mine", []);
-
     const returnedData = await ethers.provider.call({
       data: deployData,
-      gasLimit: 500000,
+      from: callingAddress,
+      nonce: "0x0", // forcing the nonce so that we get the same address from CREATE for UniswapV2FlashCaller
     });
-
-    console.log(returnedData);
 
     // 0x01 = arb opportunity exists
     expect(returnedData).to.be.eq("0x01");
