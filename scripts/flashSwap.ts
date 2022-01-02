@@ -1,5 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { deployedBytecode as UniswapV2FlashCalleeDeployedBytecode } from "../artifacts/contracts/UniswapV2FlashCallee.sol/UniswapV2FlashCallee.json";
+import { promises as fs } from "fs";
 
 const calleAddress = "0x0000000000000000000000000000000000000123";
 const callingAddress = "0x0000000000000000000000000000000000000124";
@@ -28,6 +28,11 @@ export default async function flash(params: FlashSwapParams, hre: HardhatRuntime
   ).data;
 
   try {
+    // Read deployed bytecode in at runtime so we get the latest after compile
+    const UniswapV2FlashCalleeDeployedBytecode = JSON.parse(
+      await fs.readFile("./artifacts/contracts/UniswapV2FlashCallee.sol/UniswapV2FlashCallee.json", "utf-8"),
+    ).deployedBytecode;
+
     const returnedData = await ethers.provider.send("eth_call", [
       {
         data: deployData,

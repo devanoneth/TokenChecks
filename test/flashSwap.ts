@@ -2,7 +2,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { IERC20, IUniswapV2Router02 } from "../typechain";
-import { deployedBytecode as UniswapV2FlashCalleeDeployedBytecode } from "../artifacts/contracts/UniswapV2FlashCallee.sol/UniswapV2FlashCallee.json";
+import { promises as fs } from "fs";
 import { BytesLike } from "ethers";
 const utils = ethers.utils;
 
@@ -30,6 +30,11 @@ describe("FlashSwap", async function () {
     dai = await ethers.getContractAt("IERC20", "0x6b175474e89094c44da98b954eedeac495271d0f");
 
     deadline = (await ethers.provider.getBlock("latest")).timestamp + deadlineBuffer;
+
+    // Read deployed bytecode in at runtime so we get the latest after compile
+    const UniswapV2FlashCalleeDeployedBytecode = JSON.parse(
+      await fs.readFile("./artifacts/contracts/UniswapV2FlashCallee.sol/UniswapV2FlashCallee.json", "utf-8"),
+    ).deployedBytecode;
 
     // IMPORTANT!
     // Instead of using geth's state override set, we use hardhat's set code method.
