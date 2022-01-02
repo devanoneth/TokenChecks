@@ -19,17 +19,21 @@ I also added on an example of [geth's state override set](https://geth.ethereum.
 
 ## Usage
 
+### Checking Tokens
+
  - `npm run token <token address>`
  - e.g. `npm run token 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for USDC
  - e.g. `npm run token 0x843976d0705c821ae02ab72ab505a496765c8f93` for some honeypot
 
+### Flash Swap
 There is also a [Uniswap Flash Swap](https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps) example between UniswapV2 and Sushiswap on their ETH<>DAI pairs. Running `npm run flash` will test the opportunity without deploying any contracts.
 
 Note, this example is unlikely to find an arb as that's a heavily watched pair. Also, the example is:
  - Not gas optimized.
- - Only works one way and tries to get a profit of 1e-17 DAI.
+ - Only works one way and tries to get a profit of 1e-18 DAI.
  - Probably not the most secure.
-Think of it as a proof of concept to help you learn about flash swaps.
+
+Think of it as a proof of concept to help you learn about flash swaps and usage of `eth_call`.
 
 ## Inspired by:
 

@@ -10,7 +10,7 @@ import "@uniswap/lib/contracts/libraries/TransferHelper.sol";
 
 // You should really read https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps
 // in order to understand what's happening here
-// Note: this is a really crude example, it literally makes away with 1 unit of a token i.e. 1e-17 DAI in this example
+// Note: this is a really crude example, it literally makes away with 1 unit of a token i.e. 1e-18 DAI in this example
 // Making more money is left as an exercise to the reader ;)
 // Also, not responsible for all saftey checks. You should probably do more.
 contract UniswapV2FlashCallee is IUniswapV2Callee {
