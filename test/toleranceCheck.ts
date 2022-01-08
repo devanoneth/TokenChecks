@@ -1,5 +1,6 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
+import { parseEther } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { IUniswapV2Router02 } from "../typechain";
 const utils = ethers.utils;
@@ -82,5 +83,55 @@ describe("ToleranceCheck", async function () {
 
     // reverts = fail
     await expect(ethers.provider.call({ data: deployData, value: utils.parseEther("1") })).to.be.reverted;
+  });
+
+  it("EvilERC20 should be okay, when in fact when bought by a contract, it's evil", async function () {
+    // Deploy an evil ERC20 token
+    const EvilERC20 = await ethers.getContractFactory("EvilERC20");
+    const evilERC20 = await EvilERC20.deploy(router.address);
+    await evilERC20.deployed();
+
+    // List on Uniswap
+    await evilERC20.approve(router.address, utils.parseEther("1000"));
+    await router.addLiquidityETH(
+      evilERC20.address,
+      utils.parseEther("1000"),
+      utils.parseEther("1000"),
+      utils.parseEther("5"),
+      deployer.address,
+      deadline,
+      { value: utils.parseEther("5") },
+    );
+
+    // Perform the tolerance check test
+    const ToleranceCheck = await ethers.getContractFactory("ToleranceCheck");
+    const deployData = ToleranceCheck.getDeployTransaction(
+      router.address,
+      evilERC20.address,
+      utils.parseEther("0.01"),
+    ).data;
+    const returnedData = await ethers.provider.call({
+      data: deployData,
+      value: utils.parseEther("1"),
+    });
+
+    // 0x01 = true = successful
+    expect(returnedData).to.be.eq("0x01");
+
+    // TokenBuyer is a simplified sandwich bot - it attempts to sandwich traders who buy with high slippage
+    // In this scenario we've seen someone buying evilERC20 with a high amount of slippage, and our tolerance check contract says it's all good to sandwich!
+    const TokenBuyer = await ethers.getContractFactory("TokenBuyer");
+    const tokenBuyer = await TokenBuyer.deploy();
+    await tokenBuyer.deployed();
+
+    // we've bought tokens
+    await tokenBuyer.buyTokens(router.address, evilERC20.address, utils.parseEther("2"), { value: parseEther("2") });
+
+    // the sandwiched trade hopefully gets executed here
+
+    // oh dear, we've been salmonella'd
+    await expect(tokenBuyer.sellTokens(router.address, evilERC20.address)).to.be.revertedWith(
+      "TransferHelper: TRANSFER_FROM_FAILED",
+    );
   });
 });
