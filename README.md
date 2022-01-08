@@ -31,7 +31,7 @@ I also added on an example of [geth's state override set](https://geth.ethereum.
  - e.g. `npm run token-override 0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48` for USDC
  - e.g. `npm run token-override 0x843976d0705c821ae02ab72ab505a496765c8f93` for some honeypot
 
-This seems to be the more robust way, so as the avoid intelligent malicious contracts like `EvilERC20`. Thanks to Ape Dev's [tweet](https://twitter.com/_apedev/status/1479652586018033666) and [PR](https://github.com/devanonon/TokenChecks/pull/1) for this very sneaky contract.
+This seems to be the more robust way, so as to avoid intelligent malicious contracts like `EvilERC20`. Thanks to Ape Dev's [tweet](https://twitter.com/_apedev/status/1479652586018033666) and [PR](https://github.com/devanonon/TokenChecks/pull/1) for this very sneaky contract.
 
 ### Flash Swap
 There is also a [Uniswap Flash Swap](https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps) example between UniswapV2 and Sushiswap on their ETH<>DAI pairs. Running `npm run flash` will test the opportunity without deploying any contracts.
