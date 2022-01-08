@@ -4,11 +4,15 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "solidity-coverage";
 import token from "./scripts/token";
+import tokenOverride from "./scripts/tokenOverride";
 import flashSwap from "./scripts/flashSwap";
 
 dotenv.config();
 
 task("token", "Checks the passed token").addPositionalParam("address", "Address of token").setAction(token);
+task("token-override", "Checks the passed token using geth's state override set")
+  .addPositionalParam("address", "Address of token")
+  .setAction(tokenOverride);
 
 task("flash", "Checks if a flash swap can be performed").setAction(flashSwap);
 

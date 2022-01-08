@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "npx hardhat compile",
     "token": "npx hardhat token --network mainnet",
+    "token-override": "npx hardhat token-override --network mainnet",
     "flash": "npx hardhat flash --network mainnet",
     "test": "npx hardhat test",
     "lint:check": "npx eslint '**/*.{js,ts}' && npx prettier '**/*.{json,sol,md}' --check && npx solhint 'contracts/**/*.sol'",
