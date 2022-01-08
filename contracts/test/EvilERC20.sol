@@ -39,6 +39,7 @@ contract EvilERC20 is ERC20 {
         return super.transferFrom(from, to, amount);
     }
 
+    // This is used to be extra sneaky and get past some constructor-only simulations
     function isContract(address _addr) private view returns (bool) {
         uint32 size;
         assembly {
